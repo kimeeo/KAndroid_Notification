@@ -17,69 +17,81 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Map;
+
 /**
  * Created by BhavinPadhiyar on 06/07/16.
  */
 public class MessagingService extends FirebaseMessagingService {
 
-    public static final String BODY = "body";
-    public static final String TITLE = "title";
-    public static final String TITLE_LOCALIZATION_KEY = "titleLocalizationKey";
-    public static final String BODY_LOCALIZATION_KEY = "bodyLocalizationKey";
-    public static final String CLICK_ACTION = "clickAction";
-    public static final String COLOR = "color";
-    public static final String SOUND = "sound";
-    public static final String ICON = "icon";
-    public static final String TAG = "tag";
+
+    public static final String NOTIFICATION_BODY = "notification_body";
+    public static final String NOTIFICATION_DATA = "notification_data";
+    public static final String NOTIFICATION_TITLE = "notification_title";
+    public static final String NOTIFICATION_TITLE_LOCALIZATION_KEY = "notification_titleLocalizationKey";
+    public static final String NOTIFICATION_BODY_LOCALIZATION_KEY = "notification_bodyLocalizationKey";
+    public static final String NOTIFICATION_CLICK_ACTION = "notification_clickAction";
+    public static final String NOTIFICATION_COLOR = "notification_color";
+    public static final String NOTIFICATION_SOUND = "notification_sound";
+    public static final String NOTIFICATION_ICON = "notification_icon";
+    public static final String NOTIFICATION_TAG = "notification_tag";
 
 
     public static Class<Activity>  openActivity;
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        notificationReceived(remoteMessage.getNotification());
+        notificationReceived(remoteMessage);
     }
-    protected void notificationReceived(RemoteMessage.Notification notification)
+    protected void notificationReceived(RemoteMessage remoteMessage)
     {
         if(getApplication() instanceof NotificationApp)
         {
             NotificationApp app=(NotificationApp)getApplication();
-            if(app.showDefaultMessage(notification))
+            if(app.showDefaultMessage(remoteMessage))
             {
-                Class<Activity> activity =  app.getOpenActivity(notification);
+                Class<Activity> activity =  app.getOpenActivity(remoteMessage);
                 if(activity==null)
                     activity = openActivity;
-                showNotification(notification,activity);
+                showNotification(remoteMessage,activity);
             }
             else
-                app.showNotification(notification);
+                app.showNotification(remoteMessage);
 
-            app.notificationReceived(notification);
+            app.notificationReceived(remoteMessage);
         }
         else
-            showNotification(notification,openActivity);
+            showNotification(remoteMessage,openActivity);
     }
 
-    protected void showNotification(RemoteMessage.Notification notification, Class<Activity> activity) {
+    protected void showNotification(RemoteMessage remoteMessage, Class<Activity> activity) {
+
+        RemoteMessage.Notification notification = remoteMessage.getNotification();
         Intent intent = new Intent(this,activity);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        String body = notification.getBody();
-        String title = notification.getTitle();
-        String titleLocalizationKey = notification.getTitleLocalizationKey();
-        String bodyLocalizationKey = notification.getBodyLocalizationKey();
-        String clickAction = notification.getClickAction();
-        String color = notification.getColor();
-        String sound = notification.getSound();
-        String icon = notification.getIcon();
-        String tag = notification.getTag();
-        intent.putExtra(BODY,body);
-        intent.putExtra(TITLE,title);
-        intent.putExtra(TITLE_LOCALIZATION_KEY,titleLocalizationKey);
-        intent.putExtra(BODY_LOCALIZATION_KEY,bodyLocalizationKey);
-        intent.putExtra(CLICK_ACTION,clickAction);
-        intent.putExtra(COLOR,color);
-        intent.putExtra(SOUND,sound);
-        intent.putExtra(ICON,icon);
-        intent.putExtra(TAG,tag);
+
+        if(remoteMessage.getData()!=null)
+        {
+            String data="{";
+            Map<String,String> map=remoteMessage.getData();
+            int count=0;
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                data +='"'+entry.getKey()+'"'+":"+'"'+entry.getValue()+'"';
+                if(count<map.entrySet().size()-2)
+                    data += ",";
+                count++;
+            }
+            data += "}";
+            intent.putExtra(NOTIFICATION_DATA,data);
+        }
+        intent.putExtra(NOTIFICATION_BODY,notification.getBody());
+        intent.putExtra(NOTIFICATION_TITLE,notification.getTitle());
+        intent.putExtra(NOTIFICATION_TITLE_LOCALIZATION_KEY,notification.getTitleLocalizationKey());
+        intent.putExtra(NOTIFICATION_BODY_LOCALIZATION_KEY,notification.getBodyLocalizationKey());
+        intent.putExtra(NOTIFICATION_CLICK_ACTION,notification.getClickAction());
+        intent.putExtra(NOTIFICATION_COLOR,notification.getColor());
+        intent.putExtra(NOTIFICATION_SOUND,notification.getSound());
+        intent.putExtra(NOTIFICATION_ICON,notification.getIcon());
+        intent.putExtra(NOTIFICATION_TAG,notification.getTag());
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,PendingIntent.FLAG_ONE_SHOT);
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
