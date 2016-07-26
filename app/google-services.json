@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "248565380941",
+    "firebase_url": "https://fir-push-82879.firebaseio.com",
+    "project_id": "fir-push-82879",
+    "storage_bucket": "fir-push-82879.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:248565380941:android:110b689d136f043c",
+        "android_client_info": {
+          "package_name": "com.kimeeo.kAndroid.notificationDemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "248565380941-8vrha8eo984lfdatbjddha62ood5tiq2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kimeeo.kAndroid.notificationDemo",
+            "certificate_hash": "4AED8B90C07DC8DECFC5895E0D6CF29DFED95BE1"
+          }
+        },
+        {
+          "client_id": "248565380941-1bcrar53nq9cepg9njbadtqfsrovq1a3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyn2JOYHO5FpcIgslSlRTHxfJxB9cYuz0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "248565380941-1bcrar53nq9cepg9njbadtqfsrovq1a3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

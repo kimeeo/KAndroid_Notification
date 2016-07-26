@@ -1,4 +1,4 @@
-package com.kimeeo.kAndroid.notification;
+package com.kimeeo.kAndroid.notificationDemo;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

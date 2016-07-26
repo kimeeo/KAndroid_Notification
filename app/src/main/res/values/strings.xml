@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">KAndroid_Notification</string>
+    <string name="app_name">NotificationDemo</string>
+    <string name="action_settings">Settings</string>
 </resources>

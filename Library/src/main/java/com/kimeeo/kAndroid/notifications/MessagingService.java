@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -36,6 +37,8 @@ public class MessagingService extends FirebaseMessagingService {
     public static final String NOTIFICATION_SUMMARY_TEXT = "summaryText";
     public static final String NOTIFICATION_BIG_TEXT = "bigText";
     public static final String NOTIFICATION_BIG_CONTENT_TITLE = "bigContentTitle";
+    public static final String NOTIFICATION_GROUP = "group";
+
     public static final String NOTIFICATION_AUTO_CANCEL = "autoCancel";
     public static final String NOTIFICATION_IMAGE = "image";
     public static final String NOTIFICATION_BODY = "notification_body";
@@ -55,6 +58,8 @@ public class MessagingService extends FirebaseMessagingService {
 
 
     public static Class<Activity>  openActivity;
+
+    //public static Map<Integer,Integer>  openNotifiation = new HashMap<>();
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -145,6 +150,7 @@ public class MessagingService extends FirebaseMessagingService {
         String bigText = null;
         String bigContentTitle= null;
         boolean autoCancel=true;
+        String group=null;
         if(dataMap!=null) {
 
             if(dataMap.get(NOTIFICATION_SUMMARY_TEXT)!=null)
@@ -156,9 +162,13 @@ public class MessagingService extends FirebaseMessagingService {
             if(dataMap.get(NOTIFICATION_BIG_CONTENT_TITLE)!=null)
                 bigContentTitle = dataMap.get(NOTIFICATION_BIG_CONTENT_TITLE);
 
+            if(dataMap.get(NOTIFICATION_GROUP)!=null)
+                group = dataMap.get(NOTIFICATION_GROUP);
+
             if(dataMap.get(NOTIFICATION_AUTO_CANCEL)!=null)
                 autoCancel  =dataMap.get(NOTIFICATION_AUTO_CANCEL).toString().equals("true");
         }
+
         if(style==STYLE_INBOX_STYLE)
         {
             notificationStyle= new NotificationCompat.InboxStyle(notificationBuilder)
@@ -202,13 +212,19 @@ public class MessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);;
 
+        if(group!=null)
+            notificationBuilder.setGroup(group).setGroupSummary(true);
+
         Random rand = new Random();
         int id = rand.nextInt(10000);
 
 
         NotificationManager notificationManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(id, notificationBuilder.build());
+    //    openNotifiation.put(id,id);
     }
+
+
     public Bitmap getBitmapFromURL(String strURL) {
         try {
             URL url = new URL(strURL);
