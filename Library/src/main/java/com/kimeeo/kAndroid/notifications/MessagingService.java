@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by BhavinPadhiyar on 06/07/16.
@@ -201,8 +202,12 @@ public class MessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);;
 
+        Random rand = new Random();
+        int id = rand.nextInt(10000);
+
+
         NotificationManager notificationManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0, notificationBuilder.build());
+        notificationManager.notify(id, notificationBuilder.build());
     }
     public Bitmap getBitmapFromURL(String strURL) {
         try {
