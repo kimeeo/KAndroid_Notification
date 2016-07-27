@@ -1,6 +1,7 @@
 package com.kimeeo.kAndroid.notifications;
 
 import android.app.Activity;
+import android.widget.RemoteViews;
 
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -14,6 +15,7 @@ public interface NotificationApp {
     boolean showDefaultMessage(RemoteMessage remoteMessage);
     void notificationReceived(RemoteMessage remoteMessage);
     Class<Activity> getOpenActivity(RemoteMessage remoteMessage);
-    void showNotification(RemoteMessage remoteMessage);
+    boolean showNotification(RemoteMessage remoteMessage);
     void sendNotification(Notification remoteMessage);
+    RemoteViews getRemoteViews(RemoteMessage remoteMessage);
 }

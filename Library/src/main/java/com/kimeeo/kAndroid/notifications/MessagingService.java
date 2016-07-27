@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -14,17 +13,18 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.support.annotation.DrawableRes;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.kimeeo.kandroid.notifications.R;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -55,6 +55,7 @@ public class MessagingService extends FirebaseMessagingService {
     public static final int STYLE_BIG_TEXT_STYLE = 2;
     public static final int STYLE_INBOX_STYLE = 3;
     public static final int STYLE_BIG_PICTURE_STYLE = 4;
+    public static final int STYLE_CUSTOME = 5;
 
 
     public static Class<Activity>  openActivity;
@@ -91,9 +92,13 @@ public class MessagingService extends FirebaseMessagingService {
         Intent intent=null;
         if(activity==null)
         {
+            String packageName = getPackageName();
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage(packageName);
+            String className = launchIntent.getComponent().getClassName();
+
             intent = new Intent(Intent.ACTION_MAIN);
-            //intent.setComponent(new ComponentName(getPackageName(),this));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setComponent(new ComponentName(getPackageName(),className));
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
 
             //PackageManager manager = getPackageManager();
@@ -187,17 +192,21 @@ public class MessagingService extends FirebaseMessagingService {
             Bitmap bitmap=null;
             if(dataMap!=null && dataMap.get(NOTIFICATION_IMAGE)!=null) {
                 bitmap = getBitmapFromURL(dataMap.get(NOTIFICATION_IMAGE));
-                /*
-                try {
-                    bitmap = BitmapFactory.decodeStream((InputStream) new URL(dataMap.get("image")).getContent());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
                 notificationStyle= new NotificationCompat.BigPictureStyle().bigPicture(bitmap)
                         .setBigContentTitle(bigContentTitle)
                         .setSummaryText(summaryText);
             }
         }
+        else if(style==STYLE_CUSTOME)
+        {
+            if(getApplication() instanceof NotificationApp)
+            {
+                RemoteViews remoteViews = ((NotificationApp)getApplication()).getRemoteViews(remoteMessage);
+                if(remoteViews!=null)
+                    notificationBuilder.setContent(remoteViews);
+            }
+        }
+
 
 
         if(notificationStyle!=null)
@@ -208,6 +217,7 @@ public class MessagingService extends FirebaseMessagingService {
                 .setContentTitle(contentTitle)
                 .setContentText(contentText)
                 .setAutoCancel(autoCancel)
+                .setSmallIcon(getSmallIcon())
                 .setLargeIcon(getActivityIcon(getPackageName()))
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);;
@@ -222,6 +232,11 @@ public class MessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(id, notificationBuilder.build());
     //    openNotifiation.put(id,id);
+    }
+
+    @DrawableRes
+    protected int getSmallIcon() {
+        return R.drawable.notification_small_icon;
     }
 
 
