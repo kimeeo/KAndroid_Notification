@@ -222,8 +222,12 @@ public class MessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);;
 
-        if(group!=null)
-            notificationBuilder.setGroup(group).setGroupSummary(true);
+        if(group!=null) {
+            notificationBuilder.setGroup(group);
+
+            if(summaryText!=null && summaryText.equals("")==false)
+                notificationBuilder.setGroupSummary(true);
+        }
 
         Random rand = new Random();
         int id = rand.nextInt(10000);
